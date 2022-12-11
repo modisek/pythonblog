@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import useSWR from "swr"
 import ReactMarkdown from 'react-markdown'
+import Header from '../components/header';
 
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
@@ -19,6 +20,7 @@ const { data, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/po
     
   return (
       <>
+        <Header />
       
       <h1 className="text-3xl lg:text-6xl">{data.title}</h1>
       <ReactMarkdown>{data.description}</ReactMarkdown>

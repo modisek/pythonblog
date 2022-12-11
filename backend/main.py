@@ -2,15 +2,13 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db import crud, models, schemas, database
 from fastapi.middleware.cors import CORSMiddleware
+
+
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
 
-origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "http://localhost:3000"
-]
+origins = ["http://localhost", "http://localhost:8000", "http://localhost:3000"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,6 +25,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -49,6 +48,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
+
 @app.get("/posts/{post_id}", response_model=schemas.Post)
 def read_post(post_id: int, db: Session = Depends(get_db)):
     db_post = crud.get_post_by_id(db, post_id=post_id)
@@ -56,7 +56,7 @@ def read_post(post_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Post not found")
     return db_post
 
-        
+
 @app.post("/users/{user_id}/posts/", response_model=schemas.Post)
 def create_post_for_user(
     user_id: int, post: schemas.PostCreate, db: Session = Depends(get_db)
@@ -69,8 +69,8 @@ def read_posts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     posts = crud.get_posts(db, skip=skip, limit=limit)
     return posts
 
+
 @app.delete("/posts/{post_id}")
 def delete_post(post_id: int, db: Session = Depends(get_db)):
     post = crud.delete_post(db, post_id)
     return post
-
