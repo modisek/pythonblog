@@ -69,7 +69,8 @@ def read_posts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     posts = crud.get_posts(db, skip=skip, limit=limit)
     return posts
 
-@app.get("/")
-def read_root():
-    return {"hello": "World"}
+@app.delete("/posts/{post_id}")
+def delete_post(post_id: int, db: Session = Depends(get_db)):
+    post = crud.delete_post(db, post_id)
+    return post
 

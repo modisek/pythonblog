@@ -1,7 +1,10 @@
 import { useRouter } from 'next/router'
 import useSWR from "swr"
+import ReactMarkdown from 'react-markdown'
+
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
+ 
 const Post = () => {
  const router = useRouter()
   const { pid } = router.query
@@ -11,12 +14,14 @@ const { data, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/po
 
   if (error) return <div>failed to load</div>
   if (isLoading) return <div>loading...</div>
-        {console.log(data.title)}
+
+
+    
   return (
       <>
       
-        <h1>{data.title}</h1>
-      <p>{data.description}</p>
+      <h1 className="text-3xl lg:text-6xl">{data.title}</h1>
+      <ReactMarkdown>{data.description}</ReactMarkdown>
       </>
   )
 
