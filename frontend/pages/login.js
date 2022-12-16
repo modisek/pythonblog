@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import Header from './components/header';
+import { useState } from "react";
+import { useRouter } from "next/router";
+import Header from "./components/header";
+import { useLgnProvider } from "../context/lgnContext";
 
 export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [item, setItem] = useLgnProvider();
   const router = useRouter();
 
   function handleUsernameChange(e) {
@@ -17,19 +19,23 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/token`, {
-      method: 'POST',
-      body: formData
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: username,
+        password: password,
+      }),
     });
     if (res.status == 200) {
       const json = await res.json();
-      localStorage.setItem('token', json.access_token);
+      setItem(json.access_token);
+      localStorage.setItem("token", json.access_token);
       router.push("admin");
     } else {
-      alert('Login failed.')
+      alert("Login failed.");
     }
   }
 
@@ -37,12 +43,18 @@ export default function Login() {
     <>
       <div className=" container min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
-    <Header />
+          <Header />
           <div>
-            
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-white">Sign in to your account</h2>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+              Sign in to your account
+            </h2>
           </div>
-          <form className="mt-8 space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
+          <form
+            className="mt-8 space-y-6"
+            action="#"
+            method="POST"
+            onSubmit={handleSubmit}
+          >
             <input type="hidden" name="remember" defaultValue="true" />
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
@@ -87,13 +99,19 @@ export default function Login() {
                   type="checkbox"
                   className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2 block text-sm text-gray-900"
+                >
                   Remember me
                 </label>
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-green-600 hover:text-green-500">
+                <a
+                  href="#"
+                  className="font-medium text-green-600 hover:text-green-500"
+                >
                   Forgot your password?
                 </a>
               </div>
@@ -104,9 +122,7 @@ export default function Login() {
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-
-                </span>
+                <span className="absolute left-0 inset-y-0 flex items-center pl-3"></span>
                 Sign in
               </button>
             </div>
@@ -114,5 +130,5 @@ export default function Login() {
         </div>
       </div>
     </>
-  )
+  );
 }

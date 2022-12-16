@@ -4,6 +4,7 @@ from . import models, schemas
 
 salt = bcrypt.gensalt()
 
+
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
@@ -11,17 +12,18 @@ def get_user(db: Session, user_id: int):
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
+
 def get_post_by_id(db: Session, post_id: int):
     return db.query(models.Post).filter(models.Post.id == post_id).first()
+
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
-    
-
 
 def create_user(db: Session, user: schemas.UserCreate):
     passw = bcrypt.hashpw(user.password.encode('utf-8'), salt)
+    passw = passw.decode('utf8')
     db_user = models.User(email=user.email, hashed_password=passw)
     db.add(db_user)
     db.commit()
@@ -40,14 +42,21 @@ def create_user_post(db: Session, post: schemas.PostCreate, user_id: int):
     db.refresh(db_post)
     return db_post
 
-def delete_post(db: Session, post_id:int):
-    db_delete = db.query(models.Post).filter(models.Post.id == post_id).delete()
+
+def delete_post(db: Session, post_id: int):
+    db_delete = db.query(models.Post).filter(
+        models.Post.id == post_id).delete()
     db.commit()
     return db_delete
+
 
 def update_post(db: Session, post: schemas.PostCreate, post_id: int):
     db_post = models.Post(**post.dict(), owner_id=post_id)
     db.query(models.Post).filter(models.Post.id == post_id).update(db_post)
     db.commit()
     return db_post
-    
+
+
+def get_post_of_user(db: Session, owner_id: int):
+    db_post = db.query(models.Post).filter(models.Post.owner_id == owner_id)
+    return db_post
