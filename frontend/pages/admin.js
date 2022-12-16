@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "./components/header";
 import { useLgnProvider } from "../context/lgnContext";
+import { useRouter } from "next/router";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -15,6 +16,7 @@ export async function deletePost(id) {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [id, setID] = useState(1);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -34,7 +36,7 @@ export default function Home() {
   useEffect(() => {
     getUid();
   });
-
+  //TODO: get current user and get only their blog posts
   const { data, error, isLoading } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/posts`,
     fetcher
@@ -49,7 +51,7 @@ export default function Home() {
   function handleChange1(e) {
     setDescription(e.target.value);
   }
-  //TODO: get current user and get only their blog posts
+
   async function handleSubmit() {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/users/${id}/posts/`,
@@ -67,6 +69,7 @@ export default function Home() {
     );
     const json = await res.json();
     setPosts([...posts, json]);
+    router.push("/admin");
   }
   return (
     <div className="container ">
