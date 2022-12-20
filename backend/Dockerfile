@@ -9,6 +9,7 @@ WORKDIR /code
 COPY requirements.txt /code/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install uvicorn
 COPY . /code
 FROM python:3-slim-buster
 RUN apt-get update && \

@@ -139,3 +139,5 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         "access_token": utils.create_access_token(user.email),
         "refresh_token": utils.create_refresh_token(user.email),
     }
+
+# @app.patch()

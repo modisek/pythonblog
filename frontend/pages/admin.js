@@ -8,25 +8,26 @@ import { useRouter } from "next/router";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export async function deletePost(id) {
-  const response = await fetch(`http://localhost:8000/posts/${id}`, {
-    method: "DELETE",
-  });
-  return response.json();
-}
-
 export default function Home() {
   const router = useRouter();
   const [id, setID] = useState(1);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [posts, setPosts] = useState("");
+  const [err, setError] = useState("");
 
   const [tkn, setTkn] = useLgnProvider();
+  async function deletePost(id) {
+    const response = await fetch(`http://localhost:8000/posts/${id}`, {
+      method: "DELETE",
+    });
+    response.json();
+    router.push("/admin");
+  }
   const getUid = async function () {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/`, {
       headers: {
-        Authorization: "Bearer " + tkn,
+        Authorization: "Bearer " + localStorage.getItem("token"),
         "Content-Type": "application/json",
       },
     });
@@ -35,7 +36,7 @@ export default function Home() {
   };
   useEffect(() => {
     getUid();
-  });
+  }, []);
   //TODO: get current user and get only their blog posts
   const { data, error, isLoading } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/posts`,
@@ -58,7 +59,7 @@ export default function Home() {
       {
         method: "POST",
         headers: {
-          Authorization: "Bearer " + tkn,
+          Authorization: "Bearer " + localStorage.getItem("token"),
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
