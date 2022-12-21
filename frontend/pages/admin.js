@@ -91,7 +91,7 @@ export default function Home() {
               <h1 className="text-green-400 text-4xl leading-tight font-medium mb-2">
                 {item.title}
               </h1>
-              <p className="text-gray-50 text-xl mb-4">{item.description} </p>
+              <p className="text-black text-xl mb-4">{item.description} </p>
               <Link
                 className="text-blue-600 hover:text-blue-800 visited:text-purple-600"
                 href={`/post/${item.id}`}
